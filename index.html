@@ -69,6 +69,17 @@
             color: #333;
             margin-bottom: 20px;
         }
+
+        .search-hint {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 15px;
+            font-style: italic;
+            padding: 10px;
+            background: #f0f0f0;
+            border-left: 3px solid #667eea;
+            border-radius: 4px;
+        }
         
         .search-grid {
             display: grid;
@@ -392,6 +403,7 @@
             <!-- Search Controls -->
             <div class="search-controls">
                 <div class="search-title">🔍 Search Hazard Information</div>
+                <div class="search-hint">💡 Tip: Use exact match by default. Add asterisks (*) around your search term for partial matching (e.g., *benzene*)</div>
                 
                 <div class="search-grid">
                     <div class="input-group">
@@ -408,7 +420,7 @@
                         <input 
                             type="text" 
                             id="chemicalSearch" 
-                            placeholder="e.g., Asbestos, Benzene"
+                            placeholder="e.g., Asbestos or *benzene*"
                             onkeypress="if(event.key === 'Enter') searchChemicals()"
                         >
                     </div>
@@ -444,7 +456,7 @@
                         <input 
                             type="text" 
                             id="statementSearch" 
-                            placeholder="e.g., H350, H315, cancer"
+                            placeholder="e.g., H350, H315, or *cancer*"
                             onkeypress="if(event.key === 'Enter') searchChemicals()"
                         >
                     </div>
@@ -488,7 +500,7 @@
                 <div class="empty-state">
                     <div class="empty-state-icon">🧪</div>
                     <p style="font-size: 16px; margin-bottom: 10px;">Welcome to GHS Hazard Search</p>
-                    <p style="font-size: 13px; color: #aaa;">Enter search terms above to find chemicals by CAS Number, Chemical Name, Hazard Category, Pictogram Codes, or Hazard Statement</p>
+                    <p style="font-size: 13px; color: #aaa;">Enter search terms above to find chemicals by CAS Number, Chemical Name, Hazard Category, Pictogram Codes, Signal Word, or Hazard Statement</p>
                 </div>
             </div>
         </div>
@@ -8098,36 +8110,64 @@ Main component 8 (isomer): asym. 1:2 Cr-complex of: A: 3-hydroxy-4-(2-hydroxy-na
             return result;
         }
 
+        // Check if query contains wildcards and perform appropriate matching
+        function matchesQuery(fieldValue, query) {
+            if (!query) return true;
+
+            const query_lower = query.toLowerCase();
+            const field_lower = fieldValue.toLowerCase();
+
+            // Check if query has asterisks for partial matching
+            if (query_lower.includes('*')) {
+                // Convert wildcard pattern to regex
+                const regex_pattern = query_lower
+                    .replace(/\*/g, '.*')  // * becomes .*
+                    .replace(/\?/g, '.');  // ? becomes . (optional: for single char wildcard)
+                return new RegExp(`^${regex_pattern}$`).test(field_lower);
+            } else {
+                // Exact match (case-insensitive)
+                return field_lower === query_lower;
+            }
+        }
+
         // Search chemicals
         function searchChemicals() {
-            const casQuery = document.getElementById('casSearch').value.toLowerCase().trim();
-            const chemicalQuery = document.getElementById('chemicalSearch').value.toLowerCase().trim();
-            const hazardQuery = document.getElementById('hazardSearch').value.toLowerCase().trim();
-            const pictogramQuery = document.getElementById('pictogramSearch').value.toLowerCase().trim();
-            const signalQuery = document.getElementById('signalSearch').value.toLowerCase().trim();
-            const statementQuery = document.getElementById('statementSearch').value.toLowerCase().trim();
+            const casQuery = document.getElementById('casSearch').value.trim();
+            const chemicalQuery = document.getElementById('chemicalSearch').value.trim();
+            const hazardQuery = document.getElementById('hazardSearch').value.trim();
+            const pictogramQuery = document.getElementById('pictogramSearch').value.trim();
+            const signalQuery = document.getElementById('signalSearch').value.trim();
+            const statementQuery = document.getElementById('statementSearch').value.trim();
 
             searchResults = chemicalsData.filter(chem => {
                 let match = true;
 
                 if (casQuery) {
-                    match = match && chem.cas.toLowerCase().includes(casQuery);
+                    match = match && matchesQuery(chem.cas, casQuery);
                 }
                 if (chemicalQuery) {
-                    match = match && chem.chemical.toLowerCase().includes(chemicalQuery);
+                    match = match && matchesQuery(chem.chemical, chemicalQuery);
                 }
                 if (hazardQuery) {
-                    match = match && chem.hazardCategory.toLowerCase().includes(hazardQuery);
+                    // For hazard category, check if any category matches
+                    const categories = chem.hazardCategory.split(';').map(c => c.trim());
+                    match = match && categories.some(cat => matchesQuery(cat, hazardQuery));
                 }
                 if (pictogramQuery) {
-                    match = match && chem.pictograms.toLowerCase().includes(pictogramQuery);
+                    // For pictograms, check if any pictogram matches
+                    const pictograms = chem.pictograms.split(';').map(p => p.trim());
+                    match = match && pictograms.some(pic => matchesQuery(pic, pictogramQuery));
                 }
                 if (signalQuery) {
-                    match = match && chem.signalWord.toLowerCase().includes(signalQuery);
+                    // For signal words, check if any signal word matches
+                    const signals = chem.signalWord.split(';').map(s => s.trim());
+                    match = match && signals.some(sig => matchesQuery(sig, signalQuery));
                 }
                 if (statementQuery) {
-                    match = match && (chem.statementCode.toLowerCase().includes(statementQuery) || 
-                                     chem.statement.toLowerCase().includes(statementQuery));
+                    // For statements, check both code and full statement
+                    const codeMatch = matchesQuery(chem.statementCode, statementQuery);
+                    const statementMatch = matchesQuery(chem.statement, statementQuery);
+                    match = match && (codeMatch || statementMatch);
                 }
 
                 return match;
