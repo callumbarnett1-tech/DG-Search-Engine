@@ -55,11 +55,26 @@
             padding: 40px;
         }
         
+        .search-controls {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .search-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
         .search-box {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         
         .input-group {
@@ -78,7 +93,7 @@
         
         .input-group input {
             padding: 14px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 15px;
             font-family: inherit;
@@ -95,10 +110,11 @@
             color: #999;
         }
         
-        .button-group {
+        .button-row {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+            margin-bottom: 15px;
         }
         
         button {
@@ -125,15 +141,12 @@
             box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
         }
         
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-        
         .btn-secondary {
             background: #f0f0f0;
             color: #333;
             flex: 1;
             min-width: 140px;
+            border: 1px solid #ddd;
         }
         
         .btn-secondary:hover {
@@ -150,7 +163,6 @@
         .btn-export:hover {
             background: #229954;
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(39, 174, 96, 0.3);
         }
         
         .btn-upload {
@@ -158,12 +170,12 @@
             color: white;
             flex: 1;
             min-width: 140px;
+            padding: 12px 24px;
         }
         
         .btn-upload:hover {
             background: #e67e22;
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(243, 156, 18, 0.3);
         }
         
         #fileInput {
@@ -183,7 +195,6 @@
             padding: 25px;
             border-radius: 8px;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
         }
         
         .stat-number {
@@ -195,15 +206,11 @@
         .stat-label {
             font-size: 13px;
             font-weight: 600;
-            opacity: 0.95;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
         
         .results-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             margin-bottom: 20px;
             padding-bottom: 15px;
             border-bottom: 2px solid #f0f0f0;
@@ -212,17 +219,20 @@
         .results-header h2 {
             font-size: 20px;
             color: #333;
+            display: inline-block;
+            margin-right: 20px;
         }
         
         .results-count {
             font-size: 14px;
             color: #667eea;
             font-weight: 600;
+            display: inline-block;
         }
         
         .results-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
             gap: 20px;
         }
         
@@ -251,8 +261,6 @@
         
         .substance-detail {
             margin-bottom: 10px;
-            display: flex;
-            flex-direction: column;
         }
         
         .detail-label {
@@ -289,7 +297,6 @@
             padding: 4px 10px;
             border-radius: 4px;
             font-size: 12px;
-            font-weight: 600;
             margin-right: 6px;
             margin-top: 4px;
         }
@@ -298,44 +305,12 @@
             text-align: center;
             padding: 60px 20px;
             color: #999;
+            grid-column: 1/-1;
         }
         
         .no-results-icon {
             font-size: 48px;
             margin-bottom: 15px;
-            opacity: 0.5;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #999;
-        }
-        
-        .empty-state-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
-            opacity: 0.5;
-        }
-        
-        .loading {
-            text-align: center;
-            padding: 40px;
-        }
-        
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
         
         @media (max-width: 1024px) {
@@ -349,7 +324,7 @@
                 grid-template-columns: 1fr;
             }
             
-            .button-group {
+            .button-row {
                 flex-direction: column;
             }
             
@@ -372,102 +347,94 @@
         <div class="header">
             <h1>🧪 Exposure Limits Search</h1>
             <p>Safe Work Australia Workplace Exposure Standards</p>
-            <p class="subtitle">Search by Chemical Name, Synonym, or CAS Number</p>
+            <p class="subtitle">Search by Chemical Name or CAS Number</p>
         </div>
         
         <div class="content">
-            <!-- Search Section -->
-            <div class="search-box">
-                <div class="input-group">
-                    <label for="chemicalName">Chemical Name or Synonym</label>
-                    <input 
-                        type="text" 
-                        id="chemicalName" 
-                        placeholder="e.g., Asbestos, Silica, Lead..."
-                        onkeypress="if(event.key === 'Enter') searchChemicals()"
-                    >
+            <!-- Search Controls -->
+            <div class="search-controls">
+                <div class="search-title">🔍 Search Chemicals</div>
+                
+                <div class="search-box">
+                    <div class="input-group">
+                        <label for="chemicalName">Chemical Name</label>
+                        <input 
+                            type="text" 
+                            id="chemicalName" 
+                            placeholder="e.g., Asbestos, Benzene, Carbon monoxide..."
+                            onkeypress="if(event.key === 'Enter') searchChemicals()"
+                        >
+                    </div>
+                    <div class="input-group">
+                        <label for="casNumber">CAS Number</label>
+                        <input 
+                            type="text" 
+                            id="casNumber" 
+                            placeholder="e.g., 1332-21-4, 71-43-2..."
+                            onkeypress="if(event.key === 'Enter') searchChemicals()"
+                        >
+                    </div>
                 </div>
-                <div class="input-group">
-                    <label for="casNumber">CAS Number</label>
-                    <input 
-                        type="text" 
-                        id="casNumber" 
-                        placeholder="e.g., 1332-21-4"
-                        onkeypress="if(event.key === 'Enter') searchChemicals()"
-                    >
+                
+                <!-- Button Row 1 -->
+                <div class="button-row">
+                    <button class="btn-primary" onclick="searchChemicals()">🔍 Search</button>
+                    <button class="btn-secondary" onclick="resetSearch()">↺ Clear</button>
                 </div>
+                
+                <!-- Button Row 2 -->
+                <div class="button-row">
+                    <button class="btn-upload" onclick="document.getElementById('fileInput').click()">📤 Upload CSV File</button>
+                    <button class="btn-export" onclick="exportResults()">📥 Export Results</button>
+                </div>
+                
+                <input type="file" id="fileInput" accept=".csv" onchange="handleFileUpload(event)">
             </div>
-            
-            <!-- Button Group -->
-            <div class="button-group">
-                <button class="btn-primary" onclick="searchChemicals()">🔍 Search</button>
-                <button class="btn-secondary" onclick="resetSearch()">↺ Clear Search</button>
-                <button class="btn-upload" onclick="document.getElementById('fileInput').click()">📤 Load CSV File</button>
-                <button class="btn-export" onclick="exportResults()">📥 Export Results</button>
-            </div>
-            
-            <input type="file" id="fileInput" accept=".csv" onchange="handleFileUpload(event)">
             
             <!-- Statistics -->
-            <div class="stats" id="statsContainer" style="display: none;">
+            <div class="stats">
                 <div class="stat-card">
-                    <div class="stat-number" id="totalCount">0</div>
-                    <div class="stat-label">Total Chemicals</div>
+                    <div class="stat-number" id="totalCount">5</div>
+                    <div class="stat-label">Chemicals Loaded</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number" id="matchCount">0</div>
-                    <div class="stat-label">Found</div>
+                    <div class="stat-number" id="matchCount">5</div>
+                    <div class="stat-label">Results</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number" id="carcinogenCount">0</div>
-                    <div class="stat-label">Carcinogens in Results</div>
+                    <div class="stat-number" id="carcinogenCount">3</div>
+                    <div class="stat-label">Carcinogens</div>
                 </div>
             </div>
             
             <!-- Results Section -->
-            <div id="resultsSection" style="display: none;">
+            <div>
                 <div class="results-header">
                     <h2>Results</h2>
-                    <div class="results-count" id="resultsSummary"></div>
+                    <span class="results-count" id="resultsSummary">All 5 chemicals</span>
                 </div>
                 <div class="results-container" id="resultsContainer"></div>
-            </div>
-            
-            <!-- Empty State -->
-            <div id="emptyState">
-                <div class="empty-state">
-                    <div class="empty-state-icon">📊</div>
-                    <p style="font-size: 16px; margin-bottom: 10px;">Load a CSV file to get started</p>
-                    <p style="font-size: 13px;">Click "📤 Load CSV File" to upload the exposure-limits-2026-05-18.csv file</p>
-                </div>
             </div>
         </div>
     </div>
 
     <script>
+        // CSV Data embedded directly
+        const csvData = `Substance/Agent,CAS No.,TWA (mg/m³),STEL (mg/m³),Carcinogen,Notations,Peak Limitation,Notes
+"Asbestos (all forms)","1332-21-4","0.1 (f/mL)","N/A","1A","Sk","N/A","Respirable fibres"
+"Crystalline silica (respirable)","14808-60-7","0.025 mg/m³","N/A","1A","","N/A","Quartz"
+"Lead and inorganic lead compounds","7439-92-1","0.05 mg/m³","N/A","1B","Sk","N/A",""
+"Benzene","71-43-2","1 ppm / 3.2 mg/m³","5 ppm / 16 mg/m³","1A","Sk","N/A",""
+"Carbon monoxide","630-08-0","25 ppm / 29 mg/m³","N/A","","","N/A",""`;
+
         let chemicalsData = [];
         let searchResults = [];
 
-        // Handle file upload
-        function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const csv = e.target.result;
-                    parseCSV(csv);
-                    document.getElementById('emptyState').style.display = 'none';
-                    document.getElementById('statsContainer').style.display = 'grid';
-                    updateStats();
-                } catch (error) {
-                    alert('Error parsing CSV: ' + error.message);
-                }
-            };
-            reader.readAsText(file);
-            event.target.value = '';
-        }
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            parseCSV(csvData);
+            displayAllResults();
+        });
 
         // Parse CSV file
         function parseCSV(csv) {
@@ -499,7 +466,7 @@
                 if (!line) continue;
 
                 const cells = parseCSVLine(line);
-                if (cells.length > substanceIdx) {
+                if (cells.length > 0) {
                     const substance = cells[substanceIdx] || '';
                     const cas = cells[casIdx] || '';
                     
@@ -547,6 +514,27 @@
             return result;
         }
 
+        // Handle file upload
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const csv = e.target.result;
+                    parseCSV(csv);
+                    displayAllResults();
+                    updateStats();
+                    alert(`✓ Successfully loaded ${chemicalsData.length} chemicals!`);
+                } catch (error) {
+                    alert('❌ Error parsing CSV: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
         // Search chemicals
         function searchChemicals() {
             const chemicalName = document.getElementById('chemicalName').value.toLowerCase();
@@ -573,18 +561,21 @@
             updateStats();
         }
 
+        // Display all results
+        function displayAllResults() {
+            searchResults = [...chemicalsData];
+            displayResults();
+        }
+
         // Display results
         function displayResults() {
             const container = document.getElementById('resultsContainer');
-            const section = document.getElementById('resultsSection');
 
             if (searchResults.length === 0) {
                 container.innerHTML = `
-                    <div style="grid-column: 1/-1;">
-                        <div class="no-results">
-                            <div class="no-results-icon">🔍</div>
-                            <p>No chemicals found matching your search criteria.</p>
-                        </div>
+                    <div class="no-results">
+                        <div class="no-results-icon">🔍</div>
+                        <p>No chemicals found matching your search.</p>
                     </div>
                 `;
             } else {
@@ -602,7 +593,7 @@
                             <div class="detail-value">${escapeHtml(chemical.twa)}</div>
                         </div>
                         
-                        ${chemical.stel !== 'N/A' ? `
+                        ${chemical.stel !== 'N/A' && chemical.stel ? `
                             <div class="substance-detail">
                                 <div class="detail-label">STEL (mg/m³)</div>
                                 <div class="detail-value">${escapeHtml(chemical.stel)}</div>
@@ -620,7 +611,7 @@
                                 <div class="detail-label">Notations</div>
                                 <div class="detail-value">
                                     ${chemical.notations.split(';').map(n => 
-                                        `<span class="notation-badge">${escapeHtml(n.trim())}</span>`
+                                        n.trim() ? `<span class="notation-badge">${escapeHtml(n.trim())}</span>` : ''
                                     ).join('')}
                                 </div>
                             </div>
@@ -636,9 +627,7 @@
                 `).join('');
             }
 
-            section.style.display = 'block';
-            const summary = `${searchResults.length} of ${chemicalsData.length} chemicals`;
-            document.getElementById('resultsSummary').textContent = summary;
+            updateStats();
         }
 
         // Update statistics
@@ -647,15 +636,18 @@
             document.getElementById('matchCount').textContent = searchResults.length;
             const carcinogenCount = searchResults.filter(c => c.carcinogen).length;
             document.getElementById('carcinogenCount').textContent = carcinogenCount;
+            
+            const summary = searchResults.length === chemicalsData.length 
+                ? `All ${searchResults.length} chemicals` 
+                : `${searchResults.length} of ${chemicalsData.length} chemicals`;
+            document.getElementById('resultsSummary').textContent = summary;
         }
 
         // Reset search
         function resetSearch() {
             document.getElementById('chemicalName').value = '';
             document.getElementById('casNumber').value = '';
-            searchResults = [...chemicalsData];
-            displayResults();
-            updateStats();
+            displayAllResults();
         }
 
         // Export results
@@ -685,7 +677,7 @@
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `exposure-limits-search-${new Date().toISOString().split('T')[0]}.csv`;
+            link.download = `exposure-limits-${new Date().toISOString().split('T')[0]}.csv`;
             link.click();
         }
 
