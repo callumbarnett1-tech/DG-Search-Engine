@@ -114,7 +114,6 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
-            margin-bottom: 15px;
         }
         
         button {
@@ -163,23 +162,6 @@
         .btn-export:hover {
             background: #229954;
             transform: translateY(-2px);
-        }
-        
-        .btn-upload {
-            background: #f39c12;
-            color: white;
-            flex: 1;
-            min-width: 140px;
-            padding: 12px 24px;
-        }
-        
-        .btn-upload:hover {
-            background: #e67e22;
-            transform: translateY(-2px);
-        }
-        
-        #fileInput {
-            display: none;
         }
         
         .stats {
@@ -376,26 +358,19 @@
                     </div>
                 </div>
                 
-                <!-- Button Row 1 -->
+                <!-- Button Row -->
                 <div class="button-row">
                     <button class="btn-primary" onclick="searchChemicals()">🔍 Search</button>
                     <button class="btn-secondary" onclick="resetSearch()">↺ Clear</button>
-                </div>
-                
-                <!-- Button Row 2 -->
-                <div class="button-row">
-                    <button class="btn-upload" onclick="document.getElementById('fileInput').click()">📤 Upload CSV File</button>
                     <button class="btn-export" onclick="exportResults()">📥 Export Results</button>
                 </div>
-                
-                <input type="file" id="fileInput" accept=".csv" onchange="handleFileUpload(event)">
             </div>
             
             <!-- Statistics -->
             <div class="stats">
                 <div class="stat-card">
                     <div class="stat-number" id="totalCount">5</div>
-                    <div class="stat-label">Chemicals Loaded</div>
+                    <div class="stat-label">Total Chemicals</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-number" id="matchCount">5</div>
@@ -418,21 +393,22 @@
         </div>
     </div>
 
-    <script>
-        // CSV Data embedded directly
-        const csvData = `Substance/Agent,CAS No.,TWA (mg/m³),STEL (mg/m³),Carcinogen,Notations,Peak Limitation,Notes
+    <!-- EMBEDDED CSV DATA - DO NOT MODIFY -->
+    <script id="csv-data" type="text/csv">Substance/Agent,CAS No.,TWA (mg/m³),STEL (mg/m³),Carcinogen,Notations,Peak Limitation,Notes
 "Asbestos (all forms)","1332-21-4","0.1 (f/mL)","N/A","1A","Sk","N/A","Respirable fibres"
 "Crystalline silica (respirable)","14808-60-7","0.025 mg/m³","N/A","1A","","N/A","Quartz"
 "Lead and inorganic lead compounds","7439-92-1","0.05 mg/m³","N/A","1B","Sk","N/A",""
 "Benzene","71-43-2","1 ppm / 3.2 mg/m³","5 ppm / 16 mg/m³","1A","Sk","N/A",""
-"Carbon monoxide","630-08-0","25 ppm / 29 mg/m³","N/A","","","N/A",""`;
+"Carbon monoxide","630-08-0","25 ppm / 29 mg/m³","N/A","","","N/A",""</script>
 
+    <script>
         let chemicalsData = [];
         let searchResults = [];
 
         // Initialize on page load
         window.addEventListener('load', function() {
-            parseCSV(csvData);
+            const csvText = document.getElementById('csv-data').textContent;
+            parseCSV(csvText);
             displayAllResults();
         });
 
@@ -512,27 +488,6 @@
             }
             result.push(current);
             return result;
-        }
-
-        // Handle file upload
-        function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const csv = e.target.result;
-                    parseCSV(csv);
-                    displayAllResults();
-                    updateStats();
-                    alert(`✓ Successfully loaded ${chemicalsData.length} chemicals!`);
-                } catch (error) {
-                    alert('❌ Error parsing CSV: ' + error.message);
-                }
-            };
-            reader.readAsText(file);
-            event.target.value = '';
         }
 
         // Search chemicals
